@@ -98,3 +98,28 @@ $$;
 
 GRANT EXECUTE ON FUNCTION nearby_runners TO authenticated;
 GRANT EXECUTE ON FUNCTION create_partner TO authenticated;
+
+CREATE OR REPLACE FUNCTION increment_profile_stats(
+  p_user_id UUID,
+  p_km NUMERIC,
+  p_xp INT,
+  p_pace INT
+)
+RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+  updated_stats RECORD;
+BEGIN
+  UPDATE profiles SET
+    total_km = total_km + p_km,
+    max_distance_km = GREATEST(max_distance_km, p_km),
+    weekly_runs = weekly_runs + 1,
+    avg_pace_sec_per_km = p_pace,
+    current_streak = current_streak + 1,
+    xp = xp + p_xp,
+    updated_at = now()
+  WHERE id = p_user_id
+  RETURNING total_km, xp INTO updated_stats;
+
+  RETURN jsonb_build_object('total_km', updated_stats.total_km, 'xp', updated_stats.xp);
+END;
+$$;
