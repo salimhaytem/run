@@ -30,7 +30,7 @@ export default function OnboardingScreen() {
 
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      const { status: bg } = await Location.requestBackgroundPermissionsAsync();
+      await Location.requestBackgroundPermissionsAsync();
     }
 
     setLoading(false);
@@ -47,7 +47,13 @@ export default function OnboardingScreen() {
         <Text style={styles.label}>Ville</Text>
         <View style={styles.chipRow}>
           {CITIES.map((c) => (
-            <Pressable key={c} style={[styles.chip, city === c && styles.chipActive]} onPress={() => setCity(c)}>
+            <Pressable
+              key={c}
+              style={[styles.chip, city === c && styles.chipActive]}
+              onPress={() => setCity(c)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: city === c }}
+            >
               <Text style={[styles.chipText, city === c && styles.chipTextActive]}>{c}</Text>
             </Pressable>
           ))}
@@ -56,14 +62,27 @@ export default function OnboardingScreen() {
         <Text style={styles.label}>Niveau</Text>
         <View style={styles.chipRow}>
           {LEVELS.map((l) => (
-            <Pressable key={l} style={[styles.chip, level === l && styles.chipActive]} onPress={() => setLevel(l)}>
+            <Pressable
+              key={l}
+              style={[styles.chip, level === l && styles.chipActive]}
+              onPress={() => setLevel(l)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: level === l }}
+            >
               <Text style={[styles.chipText, level === l && styles.chipTextActive]}>{l}</Text>
             </Pressable>
           ))}
         </View>
 
         <Text style={styles.label}>Bio (optionnelle)</Text>
-        <TextInput style={styles.input} placeholder="Parle-nous de toi..." placeholderTextColor={colors.textSecondary} value={bio} onChangeText={setBio} multiline />
+        <TextInput
+          style={styles.input}
+          placeholder="Parle-nous de toi..."
+          placeholderTextColor={colors.textSecondary}
+          value={bio}
+          onChangeText={setBio}
+          multiline
+        />
 
         <Button title="C'est parti !" onPress={complete} loading={loading} haptic="medium" />
       </Animated.View>
@@ -82,5 +101,15 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: colors.primaryMuted, borderColor: colors.primary },
   chipText: { color: colors.textSecondary },
   chipTextActive: { color: colors.primary, fontWeight: '600' },
-  input: { backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, color: colors.text, minHeight: 80, borderWidth: 1, borderColor: colors.border, marginBottom: spacing.lg },
+  input: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: spacing.md,
+    color: colors.text,
+    minHeight: 80,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: spacing.lg,
+    fontSize: 16,
+  },
 });
