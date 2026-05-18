@@ -33,7 +33,6 @@ CREATE TABLE profiles (
   crew_sessions INT NOT NULL DEFAULT 0,
   rescues_done INT NOT NULL DEFAULT 0,
   max_distance_km NUMERIC(10,2) NOT NULL DEFAULT 0,
-  push_token TEXT,
   onboarding_completed BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -168,6 +167,13 @@ CREATE TABLE crew_goals (
   current_value NUMERIC NOT NULL DEFAULT 0,
   period_start DATE NOT NULL,
   period_end DATE NOT NULL
+);
+
+-- Private profiles (sensitive data)
+CREATE TABLE profiles_private (
+  id UUID PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE,
+  push_token TEXT,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- SOS
@@ -416,6 +422,7 @@ BEGIN
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'username', 'runner_' || substr(NEW.id::text, 1, 8))
   );
+  INSERT INTO profiles_private (id) VALUES (NEW.id);
   INSERT INTO sos_credits (user_id) VALUES (NEW.id);
   RETURN NEW;
 END;
@@ -438,8 +445,13 @@ CREATE TRIGGER profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+CREATE TRIGGER profiles_private_updated_at
+  BEFORE UPDATE ON profiles_private
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 -- RLS
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles_private ENABLE ROW LEVEL SECURITY;
 ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
 ALTER TABLE runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE run_recaps ENABLE ROW LEVEL SECURITY;
@@ -474,6 +486,8 @@ ALTER TABLE tips ENABLE ROW LEVEL SECURITY;
 -- Profiles policies
 CREATE POLICY profiles_select ON profiles FOR SELECT USING (true);
 CREATE POLICY profiles_update ON profiles FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY profiles_private_all ON profiles_private FOR ALL USING (auth.uid() = id);
 
 -- Follows
 CREATE POLICY follows_select ON follows FOR SELECT USING (true);

@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { LatLng } from '@/lib/geo';
 
 interface RunState {
@@ -19,41 +21,9 @@ interface RunState {
   reset: () => void;
 }
 
-export const useRunStore = create<RunState>((set, get) => ({
-  runId: null,
-  isActive: false,
-  isPaused: false,
-  startedAt: null,
-  pausedAt: null,
-  totalPausedMs: 0,
-  coords: [],
-  distanceM: 0,
-  durationSec: 0,
-  startRun: (runId) =>
-    set({
-      runId,
-      isActive: true,
-      isPaused: false,
-      startedAt: Date.now(),
-      coords: [],
-      distanceM: 0,
-      durationSec: 0,
-      totalPausedMs: 0,
-    }),
-  pauseRun: () => set({ isPaused: true, pausedAt: Date.now() }),
-  resumeRun: () => {
-    const { pausedAt, totalPausedMs } = get();
-    const extra = pausedAt ? Date.now() - pausedAt : 0;
-    set({ isPaused: false, pausedAt: null, totalPausedMs: totalPausedMs + extra });
-  },
-  addCoord: (coord, deltaM) =>
-    set((s) => ({
-      coords: [...s.coords, coord],
-      distanceM: s.distanceM + deltaM,
-    })),
-  tick: (durationSec) => set({ durationSec }),
-  reset: () =>
-    set({
+export const useRunStore = create<RunState>()(
+  persist(
+    (set, get) => ({
       runId: null,
       isActive: false,
       isPaused: false,
@@ -63,5 +33,45 @@ export const useRunStore = create<RunState>((set, get) => ({
       coords: [],
       distanceM: 0,
       durationSec: 0,
+      startRun: (runId) =>
+        set({
+          runId,
+          isActive: true,
+          isPaused: false,
+          startedAt: Date.now(),
+          coords: [],
+          distanceM: 0,
+          durationSec: 0,
+          totalPausedMs: 0,
+        }),
+      pauseRun: () => set({ isPaused: true, pausedAt: Date.now() }),
+      resumeRun: () => {
+        const { pausedAt, totalPausedMs } = get();
+        const extra = pausedAt ? Date.now() - pausedAt : 0;
+        set({ isPaused: false, pausedAt: null, totalPausedMs: totalPausedMs + extra });
+      },
+      addCoord: (coord, deltaM) =>
+        set((s) => ({
+          coords: [...s.coords, coord],
+          distanceM: s.distanceM + deltaM,
+        })),
+      tick: (durationSec) => set({ durationSec }),
+      reset: () =>
+        set({
+          runId: null,
+          isActive: false,
+          isPaused: false,
+          startedAt: null,
+          pausedAt: null,
+          totalPausedMs: 0,
+          coords: [],
+          distanceM: 0,
+          durationSec: 0,
+        }),
     }),
-}));
+    {
+      name: 'pace-run-storage',
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);
