@@ -14,7 +14,7 @@ export default function Index() {
     );
   }
 
-  if (!session) return <Redirect href="/(auth)/login" />;
+  if (!session) return <Redirect href="/(auth)/welcome" />;
   if (!profile?.onboarding_completed) return <Redirect href="/(auth)/onboarding" />;
   return <Redirect href="/(tabs)/map" />;
 }

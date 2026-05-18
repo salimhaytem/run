@@ -10,32 +10,68 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
+    let mounted = true;
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-    });
+    async function initializeAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+        }
+        return;
+      }
 
-    return () => sub.subscription.unsubscribe();
-  }, []);
+      if (mounted) {
+        setSession(session);
+        setUser(session.user);
+      }
 
-  useEffect(() => {
-    if (!user) {
-      setProfile(null);
-      return;
+      // Fetch profile before setting loading to false
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (mounted) {
+        setProfile(profileData as Profile | null);
+        setLoading(false);
+      }
     }
-    supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-      .then(({ data }) => setProfile(data as Profile | null));
-  }, [user?.id]);
+
+    initializeAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, s) => {
+      if (mounted) {
+        setSession(s);
+        setUser(s?.user ?? null);
+      }
+
+      if (s?.user) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', s.user.id)
+          .single();
+        if (mounted) {
+          setProfile(profileData as Profile | null);
+        }
+      } else {
+        if (mounted) {
+          setProfile(null);
+        }
+      }
+    });
+
+    return () => {
+      mounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const refreshProfile = async () => {
     if (!user) return;
