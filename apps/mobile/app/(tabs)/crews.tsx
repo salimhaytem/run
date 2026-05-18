@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { Sheet } from '@/components/ui/BottomSheet';
 import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/hooks/useToast';
 import { useHaptics } from '@/hooks/useHaptics';
 import { colors, spacing, typography } from '@/theme/tokens';
@@ -115,7 +116,15 @@ export default function CrewsScreen() {
             </Animated.View>
           );
         }}
-        ListEmptyComponent={<Text style={styles.empty}>Rejoins ou crée ton premier crew</Text>}
+        ListEmptyComponent={
+          <EmptyState
+            title="Aucun crew"
+            description="Rejoins ou crée ton premier crew pour courir en groupe."
+            icon="👥"
+            actionTitle="Créer un crew"
+            onAction={() => setShowCreate(true)}
+          />
+        }
       />
 
       <Sheet visible={showCreate} onClose={() => setShowCreate(false)} title="Nouveau crew" snapPoints={['45%']}>

@@ -7,6 +7,8 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/BottomSheet';
 import { SkeletonFeed } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorView } from '@/components/ui/ErrorView';
 import { useToast } from '@/hooks/useToast';
 import { useHaptics } from '@/hooks/useHaptics';
 import { followUser } from '@/features/social/followUser';
@@ -50,6 +52,7 @@ export default function FeedScreen() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [commentPost, setCommentPost] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
@@ -58,6 +61,8 @@ export default function FeedScreen() {
 
   const load = useCallback(async (pageNum = 0, append = false) => {
     setLoading(true);
+    setError(null);
+    try {
     const { data: storyData } = await supabase
       .from('stories')
       .select('id, user_id, media_url, profiles(username, avatar_url)')
@@ -97,8 +102,13 @@ export default function FeedScreen() {
     );
 
     setPosts(append ? (prev) => [...prev, ...enriched] : enriched);
-    setLoading(false);
-    setInitialLoading(false);
+    } catch (e) {
+      setError("Impossible de charger le feed");
+      console.error(e);
+    } finally {
+      setLoading(false);
+      setInitialLoading(false);
+    }
   }, [user?.id]);
 
   useEffect(() => { load(0); }, [load]);
@@ -156,6 +166,7 @@ export default function FeedScreen() {
   };
 
   if (initialLoading) return <SkeletonFeed />;
+  if (error && posts.length === 0) return <ErrorView message={error} onRetry={() => load(0)} />;
 
   return (
     <View style={styles.container}>
@@ -194,7 +205,13 @@ export default function FeedScreen() {
           />
         )}
         ListFooterComponent={loading ? <Text style={styles.loading}>Chargement...</Text> : null}
-        ListEmptyComponent={<Text style={styles.empty}>Le feed se remplit après tes runs</Text>}
+        ListEmptyComponent={
+          <EmptyState
+            title="Feed vide"
+            description="Le feed se remplit après tes runs ou ceux de tes amis."
+            icon="🏃"
+          />
+        }
       />
 
       <Sheet visible={!!commentPost} onClose={() => setCommentPost(null)} title="Commentaire" snapPoints={['50%']}>
@@ -230,9 +247,9 @@ export default function FeedScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  storiesRail: { maxHeight: 90, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
-  storyItem: { alignItems: 'center', marginRight: spacing.md, width: 64 },
-  storyName: { color: colors.textSecondary, fontSize: 11, marginTop: 4 },
+  storiesRail: { maxHeight: 110, paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.border },
+  storyItem: { alignItems: 'center', marginLeft: spacing.md, width: 68 },
+  storyName: { color: colors.textSecondary, fontSize: 11, marginTop: 6, fontWeight: '500' },
   emptyStories: { color: colors.textSecondary, padding: spacing.md },
   list: { padding: spacing.md },
   empty: { color: colors.textSecondary, textAlign: 'center', marginTop: spacing.xl },

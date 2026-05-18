@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { useToast } from '@/hooks/useToast';
 import { useHaptics } from '@/hooks/useHaptics';
 import { colors, spacing, typography } from '@/theme/tokens';
@@ -32,8 +33,21 @@ export default function LoginScreen() {
         <Text style={styles.brand}>PACE</Text>
         <Text style={styles.subtitle}>Social Running Network</Text>
 
-        <TextInput style={styles.input} placeholder="Email" placeholderTextColor={colors.textSecondary} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-        <TextInput style={styles.input} placeholder="Mot de passe" placeholderTextColor={colors.textSecondary} value={password} onChangeText={setPassword} secureTextEntry />
+        <Input
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          icon="✉️"
+        />
+        <Input
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          icon="🔒"
+        />
 
         <Button title="Connexion" onPress={login} loading={loading} haptic="medium" />
 
@@ -50,6 +64,5 @@ const styles = StyleSheet.create({
   content: { padding: spacing.xl, gap: spacing.md },
   brand: { ...typography.title, color: colors.primary, textAlign: 'center', fontSize: 42, marginBottom: spacing.xs },
   subtitle: { color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.lg },
-  input: { backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, color: colors.text, borderWidth: 1, borderColor: colors.border, fontSize: 16 },
   link: { color: colors.primary, textAlign: 'center', marginTop: spacing.md, fontWeight: '600' },
 });

@@ -74,14 +74,13 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        <Text style={styles.label}>Bio (optionnelle)</Text>
-        <TextInput
-          style={styles.input}
+        <Input
+          label="Bio (optionnelle)"
           placeholder="Parle-nous de toi..."
-          placeholderTextColor={colors.textSecondary}
           value={bio}
           onChangeText={setBio}
           multiline
+          style={{ minHeight: 80, paddingTop: spacing.sm }}
         />
 
         <Button title="C'est parti !" onPress={complete} loading={loading} haptic="medium" />
@@ -101,15 +100,4 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: colors.primaryMuted, borderColor: colors.primary },
   chipText: { color: colors.textSecondary },
   chipTextActive: { color: colors.primary, fontWeight: '600' },
-  input: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: spacing.md,
-    color: colors.text,
-    minHeight: 80,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: spacing.lg,
-    fontSize: 16,
-  },
 });
