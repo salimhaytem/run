@@ -1,0 +1,13 @@
+Le projet PACE a été généré dans le dossier Cursor :
+  C:\Users\pc\.cursor\projects\empty-window\pace
+
+Tu as demandé de travailler dans "running" (ton Bureau) :
+  C:\Users\pc\Desktop\running
+
+Pour tout mettre dans running :
+  1. Ouvre PowerShell dans ce dossier (Shift + clic droit > Ouvrir PowerShell ici).
+  2. Lance : node copy-pace-from-cursor.js
+
+Ou copie-colle manuellement tout le contenu de "pace" vers "running".
+
+Ensuite ouvre le dossier "running" dans Cursor (File > Open Folder) pour que les prochains changements se fassent ici.

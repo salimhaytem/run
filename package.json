@@ -1,0 +1,17 @@
+{
+  "name": "pace",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "packages/shared"
+  ],
+  "scripts": {
+    "mobile": "npm run start --workspace=apps/mobile",
+    "mobile:android": "npm run android --workspace=apps/mobile",
+    "mobile:ios": "npm run ios --workspace=apps/mobile",
+    "db:reset": "cd supabase && supabase db reset",
+    "lint": "npm run lint --workspace=apps/mobile",
+    "test": "npm run test --workspace=apps/mobile",
+    "assets": "node scripts/generate-assets.js"
+  }
+}

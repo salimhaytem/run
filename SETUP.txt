@@ -1,0 +1,27 @@
+PACE — Setup rapide
+=====================
+
+1. Prérequis: Node 20+, npm, Supabase CLI, Expo Go ou dev build.
+
+2. Installer:
+   cd pace
+   npm run assets
+   npm install
+
+3. Supabase:
+   - Créer un projet sur supabase.com
+   - supabase link --project-ref YOUR_REF
+   - supabase db push
+   - supabase functions deploy
+
+4. Config mobile (apps/mobile/.env):
+   EXPO_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+
+5. Lancer:
+   npm run mobile
+
+6. Cron stories (dashboard Supabase): appeler expire_stories toutes les heures.
+
+7. Builds store:
+   cd apps/mobile && npx eas build --profile preview
