@@ -50,6 +50,6 @@ const styles = StyleSheet.create({
   content: { padding: spacing.xl, gap: spacing.md },
   brand: { ...typography.title, color: colors.primary, textAlign: 'center', fontSize: 42, marginBottom: spacing.xs },
   subtitle: { color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.lg },
-  input: { backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, color: colors.text, borderWidth: 1, borderColor: colors.border },
-  link: { color: colors.primary, textAlign: 'center', marginTop: spacing.md },
+  input: { backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, color: colors.text, borderWidth: 1, borderColor: colors.border, fontSize: 16 },
+  link: { color: colors.primary, textAlign: 'center', marginTop: spacing.md, fontWeight: '600' },
 });

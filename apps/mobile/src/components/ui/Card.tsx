@@ -1,6 +1,7 @@
 import { View, StyleSheet, ViewStyle, Pressable } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { ReactNode } from 'react';
+import * as Haptics from 'expo-haptics';
 import { colors, spacing, radius, elevation } from '@/theme/tokens';
 
 interface CardProps {
@@ -9,9 +10,10 @@ interface CardProps {
   elevated?: boolean;
   onPress?: () => void;
   haptic?: 'light' | 'medium';
+  accessibilityLabel?: string;
 }
 
-export function Card({ children, style, elevated, onPress, haptic }: CardProps) {
+export function Card({ children, style, elevated, onPress, haptic, accessibilityLabel }: CardProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -35,11 +37,12 @@ export function Card({ children, style, elevated, onPress, haptic }: CardProps) 
     return (
       <Pressable
         onPress={() => {
-          if (haptic) {
-            try { (global as any).Haptics?.impactAsync?.(haptic === 'medium' ? 1 : 0); } catch {}
-          }
+          if (haptic === 'medium') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          else if (haptic === 'light') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onPress();
         }}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
         onPressIn={() => { scale.value = withSpring(0.98, { damping: 15, stiffness: 200, mass: 0.5 }); }}
         onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 200, mass: 0.5 }); }}
       >

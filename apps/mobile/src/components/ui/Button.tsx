@@ -12,6 +12,8 @@ interface Props {
   disabled?: boolean;
   haptic?: 'light' | 'medium' | 'heavy';
   icon?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export function Button({
@@ -23,6 +25,8 @@ export function Button({
   disabled,
   haptic = 'light',
   icon,
+  accessibilityLabel,
+  accessibilityHint,
 }: Props) {
   const scale = useSharedValue(1);
 
@@ -56,6 +60,10 @@ export function Button({
           onPress();
         }}
         disabled={disabled || loading}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel ?? title}
+        accessibilityHint={accessibilityHint}
+        accessibilityState={{ disabled: !!(disabled || loading), busy: !!loading }}
         onPressIn={() => { scale.value = withSpring(0.97, { damping: 15, stiffness: 200, mass: 0.5 }); }}
         onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 200, mass: 0.5 }); }}
         style={({ pressed }: { pressed: boolean }) => [

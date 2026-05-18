@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { colors } from '@/theme/tokens';
@@ -28,6 +29,11 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      screenListeners={{
+        tabPress: () => {
+          Haptics.selectionAsync();
+        },
+      }}
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
