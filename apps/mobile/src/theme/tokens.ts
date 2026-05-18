@@ -8,11 +8,16 @@ export const colors = {
   accentMuted: '#00D9A540',
   text: '#F5F7FA',
   textSecondary: '#8B95A8',
+  textTertiary: '#5C677D',
   border: '#2A3544',
   danger: '#FF4757',
   dangerMuted: '#FF475740',
   warning: '#FFB020',
+  warningMuted: '#FFB02040',
   success: '#00D9A5',
+  successMuted: '#00D9A540',
+  info: '#3B82F6',
+  infoMuted: '#3B82F640',
   mapRunner: '#00D9A5',
   mapCrew: '#FF6B35',
   mapEvent: '#7B68EE',
@@ -66,10 +71,12 @@ export const animation = {
 };
 
 export const typography = {
+  display: { fontSize: 34, fontWeight: '800' as const, letterSpacing: -1 },
   title: { fontSize: 28, fontWeight: '700' as const, letterSpacing: -0.5 },
   heading: { fontSize: 20, fontWeight: '600' as const, letterSpacing: -0.3 },
   subheading: { fontSize: 17, fontWeight: '600' as const },
-  body: { fontSize: 16, fontWeight: '400' as const },
-  caption: { fontSize: 13, fontWeight: '400' as const },
-  label: { fontSize: 11, fontWeight: '600' as const, letterSpacing: 0.5 },
+  body: { fontSize: 16, fontWeight: '400' as const, lineHeight: 22 },
+  bodySmall: { fontSize: 14, fontWeight: '400' as const, lineHeight: 20 },
+  caption: { fontSize: 12, fontWeight: '500' as const },
+  label: { fontSize: 11, fontWeight: '700' as const, letterSpacing: 0.5, textTransform: 'uppercase' as const },
 };

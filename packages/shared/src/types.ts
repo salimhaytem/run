@@ -34,6 +34,12 @@ export interface Profile {
   created_at: string;
 }
 
+export interface ProfilePrivate {
+  id: string;
+  push_token: string | null;
+  updated_at: string;
+}
+
 export interface Run {
   id: string;
   user_id: string;

@@ -39,10 +39,11 @@ export function Button({
     : variant === 'danger' ? colors.danger
     : variant === 'premium' ? '#FFD700'
     : variant === 'secondary' ? colors.surfaceElevated
+    : variant === 'ghost' ? colors.surface
     : 'transparent';
 
   const textColor =
-    variant === 'ghost' ? colors.primary
+    variant === 'ghost' ? colors.textSecondary
     : variant === 'premium' ? '#000'
     : colors.text;
 
@@ -96,8 +97,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ghost: { borderWidth: 1, borderColor: colors.primary, backgroundColor: 'transparent' },
-  text: { fontWeight: '600' },
+  ghost: { borderWidth: 1, borderColor: colors.border },
+  text: { fontWeight: '700', letterSpacing: 0.2 },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   icon: { fontSize: 16 },
 });

@@ -38,7 +38,7 @@ export function StatBlock({ label, value, animated = false, size = 'md' }: StatB
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', flex: 1 },
-  value: { color: colors.text, fontWeight: '700' },
-  label: { color: colors.textSecondary, marginTop: spacing.xs },
+  wrap: { alignItems: 'center', flex: 1, paddingVertical: spacing.xs },
+  value: { color: colors.text, fontWeight: '800', letterSpacing: -0.5 },
+  label: { color: colors.textTertiary, marginTop: 2, fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
 });
