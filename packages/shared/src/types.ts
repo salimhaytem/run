@@ -30,6 +30,7 @@ export interface Profile {
   crew_sessions: number;
   rescues_done: number;
   max_distance_km: number;
+  onboarding_completed: boolean;
   created_at: string;
 }
 

@@ -1,50 +1,95 @@
-import { Pressable, StyleSheet, Text, ActivityIndicator } from 'react-native';
-import { colors, spacing } from '@/theme/tokens';
+import { Pressable, StyleSheet, Text, ActivityIndicator, View } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { colors, spacing, radius } from '@/theme/tokens';
 
 interface Props {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'premium';
+  size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
+  haptic?: 'light' | 'medium' | 'heavy';
+  icon?: string;
 }
 
-export function Button({ title, onPress, variant = 'primary', loading, disabled }: Props) {
+export function Button({
+  title,
+  onPress,
+  variant = 'primary',
+  size = 'md',
+  loading,
+  disabled,
+  haptic = 'light',
+  icon,
+}: Props) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   const bg =
-    variant === 'primary'
-      ? colors.primary
-      : variant === 'danger'
-        ? colors.danger
-        : variant === 'secondary'
-          ? colors.surfaceElevated
-          : 'transparent';
+    variant === 'primary' ? colors.primary
+    : variant === 'danger' ? colors.danger
+    : variant === 'premium' ? '#FFD700'
+    : variant === 'secondary' ? colors.surfaceElevated
+    : 'transparent';
+
+  const textColor =
+    variant === 'ghost' ? colors.primary
+    : variant === 'premium' ? '#000'
+    : colors.text;
+
+  const paddingV = size === 'sm' ? spacing.sm : size === 'lg' ? spacing.lg : spacing.md;
+  const paddingH = size === 'sm' ? spacing.md : size === 'lg' ? spacing.xl : spacing.lg;
+  const fontSize = size === 'sm' ? 14 : size === 'lg' ? 18 : 16;
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled || loading}
-      style={({ pressed }) => [
-        styles.btn,
-        { backgroundColor: bg, opacity: pressed || disabled ? 0.7 : 1 },
-        variant === 'ghost' && styles.ghost,
-      ]}
-    >
-      {loading ? (
-        <ActivityIndicator color={colors.text} />
-      ) : (
-        <Text style={[styles.text, variant === 'ghost' && { color: colors.primary }]}>{title}</Text>
-      )}
-    </Pressable>
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        onPress={() => {
+          if (haptic === 'medium') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          else if (haptic === 'heavy') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          else if (haptic === 'light') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onPress();
+        }}
+        disabled={disabled || loading}
+        onPressIn={() => { scale.value = withSpring(0.97, { damping: 15, stiffness: 200, mass: 0.5 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 200, mass: 0.5 }); }}
+        style={({ pressed }: { pressed: boolean }) => [
+          styles.btn,
+          {
+            backgroundColor: bg,
+            paddingVertical: paddingV,
+            paddingHorizontal: paddingH,
+            opacity: pressed || disabled ? 0.7 : 1,
+          },
+          variant === 'ghost' && styles.ghost,
+        ]}
+      >
+        {loading ? (
+          <ActivityIndicator color={textColor} />
+        ) : (
+          <View style={styles.row}>
+            {icon && <Text style={[styles.icon, { color: textColor }]}>{icon}</Text>}
+            <Text style={[styles.text, { color: textColor, fontSize }]}>{title}</Text>
+          </View>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   btn: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
+    borderRadius: radius.md,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  ghost: { borderWidth: 1, borderColor: colors.primary },
-  text: { color: colors.text, fontSize: 16, fontWeight: '600' },
+  ghost: { borderWidth: 1, borderColor: colors.primary, backgroundColor: 'transparent' },
+  text: { fontWeight: '600' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  icon: { fontSize: 16 },
 });

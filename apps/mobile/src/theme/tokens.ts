@@ -10,24 +10,66 @@ export const colors = {
   textSecondary: '#8B95A8',
   border: '#2A3544',
   danger: '#FF4757',
+  dangerMuted: '#FF475740',
   warning: '#FFB020',
+  success: '#00D9A5',
   mapRunner: '#00D9A5',
   mapCrew: '#FF6B35',
   mapEvent: '#7B68EE',
   mapPartner: '#FFB020',
 };
 
+export const gradients = {
+  primary: ['#FF6B35', '#FF8F65'] as const,
+  sos: ['#FF4757', '#FF6B81'] as const,
+  accent: ['#00D9A5', '#00E6B3'] as const,
+  premium: ['#FFD700', '#FFA500'] as const,
+};
+
 export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48,
+};
+
+export const radius = {
+  sm: 8, md: 12, lg: 16, xl: 24, full: 9999,
+};
+
+export const elevation = {
+  low: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  medium: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  high: {
+    shadowColor: '#FF6B35',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 12,
+  },
+};
+
+export const animation = {
+  spring: { damping: 15, stiffness: 150, mass: 0.8 },
+  springLight: { damping: 20, stiffness: 200, mass: 0.5 },
+  timing: { duration: 250 },
+  fast: { duration: 150 },
 };
 
 export const typography = {
-  title: { fontSize: 28, fontWeight: '700' as const },
-  heading: { fontSize: 20, fontWeight: '600' as const },
+  title: { fontSize: 28, fontWeight: '700' as const, letterSpacing: -0.5 },
+  heading: { fontSize: 20, fontWeight: '600' as const, letterSpacing: -0.3 },
+  subheading: { fontSize: 17, fontWeight: '600' as const },
   body: { fontSize: 16, fontWeight: '400' as const },
   caption: { fontSize: 13, fontWeight: '400' as const },
+  label: { fontSize: 11, fontWeight: '600' as const, letterSpacing: 0.5 },
 };

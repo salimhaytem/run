@@ -1,15 +1,60 @@
-import { View, StyleSheet, ViewStyle } from 'react-native';
-import { colors, spacing } from '@/theme/tokens';
+import { View, StyleSheet, ViewStyle, Pressable } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { ReactNode } from 'react';
+import { colors, spacing, radius, elevation } from '@/theme/tokens';
 
-export function Card({ children, style }: { children: ReactNode; style?: ViewStyle }) {
-  return <View style={[styles.card, style]}>{children}</View>;
+interface CardProps {
+  children: ReactNode;
+  style?: ViewStyle;
+  elevated?: boolean;
+  onPress?: () => void;
+  haptic?: 'light' | 'medium';
+}
+
+export function Card({ children, style, elevated, onPress, haptic }: CardProps) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const content = (
+    <Animated.View
+      style={[
+        styles.card,
+        elevated && elevation.medium,
+        animatedStyle,
+        style,
+      ]}
+    >
+      {children}
+    </Animated.View>
+  );
+
+  if (onPress) {
+    return (
+      <Pressable
+        onPress={() => {
+          if (haptic) {
+            try { (global as any).Haptics?.impactAsync?.(haptic === 'medium' ? 1 : 0); } catch {}
+          }
+          onPress();
+        }}
+        onPressIn={() => { scale.value = withSpring(0.98, { damping: 15, stiffness: 200, mass: 0.5 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 200, mass: 0.5 }); }}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  return content;
 }
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,

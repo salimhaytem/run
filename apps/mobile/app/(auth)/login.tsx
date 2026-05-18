@@ -1,77 +1,55 @@
 import { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { Link, router } from 'expo-router';
+import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import { router } from 'expo-router';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/hooks/useToast';
+import { useHaptics } from '@/hooks/useHaptics';
 import { colors, spacing, typography } from '@/theme/tokens';
 
 export default function LoginScreen() {
+  const toast = useToast();
+  const haptics = useHaptics();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const signIn = async () => {
+  const login = async () => {
+    if (!email.trim() || !password) { toast.error('Email et mot de passe requis'); return; }
     setLoading(true);
-    setError(null);
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    haptics.medium();
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setLoading(false);
-    if (err) setError(err.message);
-    else router.replace('/');
+    if (error) { toast.error(error.message); return; }
+    haptics.success();
+    router.replace('/(tabs)/map');
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}
-    >
-      <Text style={styles.logo}>PACE</Text>
-      <Text style={styles.tagline}>Réseau social running</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor={colors.textSecondary}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Mot de passe"
-        placeholderTextColor={colors.textSecondary}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button title="Connexion" onPress={signIn} loading={loading} />
-      <Link href="/(auth)/register" style={styles.link}>
-        <Text style={styles.linkText}>Créer un compte</Text>
-      </Link>
-    </KeyboardAvoidingView>
+    <View style={styles.container}>
+      <Animated.View entering={FadeInDown} style={styles.content}>
+        <Text style={styles.brand}>PACE</Text>
+        <Text style={styles.subtitle}>Social Running Network</Text>
+
+        <TextInput style={styles.input} placeholder="Email" placeholderTextColor={colors.textSecondary} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+        <TextInput style={styles.input} placeholder="Mot de passe" placeholderTextColor={colors.textSecondary} value={password} onChangeText={setPassword} secureTextEntry />
+
+        <Button title="Connexion" onPress={login} loading={loading} haptic="medium" />
+
+        <Pressable onPress={() => router.push('/(auth)/register')}>
+          <Text style={styles.link}>Pas de compte ? S'inscrire</Text>
+        </Pressable>
+      </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-    padding: spacing.lg,
-    justifyContent: 'center',
-  },
-  logo: { ...typography.title, color: colors.primary, textAlign: 'center' },
-  tagline: { color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.xl },
-  input: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: spacing.md,
-    color: colors.text,
-    marginBottom: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  error: { color: colors.danger, marginBottom: spacing.sm },
-  link: { marginTop: spacing.lg, alignItems: 'center' },
-  linkText: { color: colors.primary },
+  container: { flex: 1, backgroundColor: colors.background, justifyContent: 'center' },
+  content: { padding: spacing.xl, gap: spacing.md },
+  brand: { ...typography.title, color: colors.primary, textAlign: 'center', fontSize: 42, marginBottom: spacing.xs },
+  subtitle: { color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.lg },
+  input: { backgroundColor: colors.surface, borderRadius: 12, padding: spacing.md, color: colors.text, borderWidth: 1, borderColor: colors.border },
+  link: { color: colors.primary, textAlign: 'center', marginTop: spacing.md },
 });

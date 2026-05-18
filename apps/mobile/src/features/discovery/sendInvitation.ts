@@ -21,6 +21,9 @@ export async function sendRunInvitation(
     await supabase.functions.invoke('notify_run_invitation', {
       body: { invitation_id: data.id },
     });
+    await supabase.functions.invoke('award_badges', {
+      body: { user_id: fromUserId, event: 'invitation_sent' },
+    });
   }
   return data;
 }
