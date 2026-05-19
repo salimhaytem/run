@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, ActivityIndicator, View } from 'react-native';
+import { Pressable, StyleSheet, Text, ActivityIndicator, View, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, radius } from '@/theme/tokens';
@@ -12,6 +12,7 @@ interface Props {
   disabled?: boolean;
   haptic?: 'light' | 'medium' | 'heavy';
   icon?: string;
+  containerStyle?: ViewStyle;
   accessibilityLabel?: string;
   accessibilityHint?: string;
 }
@@ -25,6 +26,7 @@ export function Button({
   disabled,
   haptic = 'light',
   icon,
+  containerStyle,
   accessibilityLabel,
   accessibilityHint,
 }: Props) {
@@ -52,7 +54,7 @@ export function Button({
   const fontSize = size === 'sm' ? 14 : size === 'lg' ? 18 : 16;
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={[animatedStyle, containerStyle]}>
       <Pressable
         onPress={() => {
           if (haptic === 'medium') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
